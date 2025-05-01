@@ -4,10 +4,10 @@
             <a class="navbar-brand fw-bold" href="#">LagaChat</a>
 
             <div class="ms-auto d-flex align-items-center">
-                <div v-if="user" class="dropdown">
+                <div v-if="authStore.token" class="dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        {{ user.name }}
+                        {{ authStore.user.name }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
@@ -27,17 +27,18 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import { useAuthStore } from '@/store/authStore'
 
-// Simulate auth (use real store/auth composable in production)
-const user = ref(null)
+const authStore = useAuthStore()
+
 const router = useRouter()
 
-onMounted(() => {
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-        user.value = JSON.parse(savedUser)
-    }
-})
+// onMounted(() => {
+//     const savedUser = localStorage.getItem('user')
+//     if (savedUser) {
+//         user.value = JSON.parse(savedUser)
+//     }
+// })
 
 function logout() {
     localStorage.removeItem('user')

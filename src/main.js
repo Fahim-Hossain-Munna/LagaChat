@@ -8,8 +8,15 @@ import { createPinia } from "pinia";
 // ✅ Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import axios from "axios";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
-const vueApp = createApp(App);
-vueApp.use(router);
-vueApp.use(createPinia());
-vueApp.mount("#app");
+axios.defaults.baseURL = "http://127.0.0.1:8000/api/";
+
+const app = createApp(App);
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+app.use(router);
+app.use(pinia);
+app.mount("#app");

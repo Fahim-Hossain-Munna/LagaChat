@@ -13,12 +13,19 @@
 
 <script setup>
 import { useChatStore } from '@/store/chatStore'
+import { useAuthStore } from '@/store/authStore'
 import { ref } from 'vue'
+
 defineProps(['users'])
 const chatStore = useChatStore()
+const authStore = useAuthStore()
+
+const emit = defineEmits(['selectUser'])
 
 const activeUser = (user) => {
     chatStore.selectUser(user)
+    chatStore.currentUser = authStore.user
+    emit('selectUser', user)
 }
 
 </script>

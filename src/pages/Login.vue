@@ -26,31 +26,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useChatStore } from '@/store/chatStore'
+import { useAuthStore } from '@/store/authStore'
+import axios from 'axios'
 
 const email = ref('')
 const password = ref('')
 const error = ref(null)
 const router = useRouter()
+const authStore = useAuthStore()
 const chatStore = useChatStore()
 
-const handleLogin = () => {
-    error.value = null
+const handleLogin = async () => {
 
-    console.log(email.value, password.value);
+    const response = await axios.post('login', {
+        email: email.value,
+        password: password.value
+    })
 
-
-    // Dummy login logic (replace with API in real app)
-    // if (email.value === 'john@example.com' && password.value === '123456') {
-    //     chatStore.currentUser = { id: 1, name: 'John' }
-    //     router.push('/chat')
-    // } else if (email.value === 'alice@example.com' && password.value === '123456') {
-    //     chatStore.currentUser = { id: 2, name: 'Alice' }
-    //     router.push('/chat')
-    // } else {
-    //     error.value = 'Invalid email or password'
-    // }
+    if (response.data.data.token != null) {
+        authStore.login(response.data.data.user, response.data.data.token)
+        chatStore.currentUser = response.data.data.user
+        router.push('/')
+    }
 }
+
+
+onMounted(() => {
+    if (authStore.token) {
+        router.push('/')
+    }
+})
 </script>

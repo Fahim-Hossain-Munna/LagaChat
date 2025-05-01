@@ -1,43 +1,37 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
 
-export const useChatStore = defineStore("chat", () => {
-  const currentUser = ref({ id: 999, name: "me" }); // Simulated logged-in user
-  const selectedUser = ref(null);
-  const messages = ref([]);
-
-  const selectUser = (user) => {
-    selectedUser.value = user;
-  };
-
-  const sendMessage = (text) => {
-    if (!selectedUser.value) return;
-    messages.value.push({
-      id: Date.now(),
-      sender: currentUser.value.name,
-      receiver: selectedUser.value.name,
-      text,
-    });
-  };
-
-  const filteredMessages = computed(() =>
-    selectedUser.value
-      ? messages.value.filter(
-          (m) =>
-            (m.sender === currentUser.value.name &&
-              m.receiver === selectedUser.value.name) ||
-            (m.receiver === currentUser.value.name &&
-              m.sender === selectedUser.value.name)
-        )
-      : []
-  );
-
-  return {
-    currentUser,
-    selectedUser,
-    messages,
-    filteredMessages,
-    selectUser,
-    sendMessage,
-  };
+export const useChatStore = defineStore("chat", {
+  state: () => ({
+    currentUser: null, // Simulated logged-in user
+    selectedUser: null,
+    messages: [],
+  }),
+  getters: {
+    filteredMessages(state) {
+      return state.selectedUser
+        ? state.messages.filter(
+            (m) =>
+              (m.sender === state.currentUser.name &&
+                m.receiver === state.selectedUser.name) ||
+              (m.receiver === state.currentUser.name &&
+                m.sender === state.selectedUser.name)
+          )
+        : [];
+    },
+  },
+  actions: {
+    selectUser(user) {
+      this.selectedUser = user;
+    },
+    sendMessage(text) {
+      if (!this.selectedUser) return;
+      this.messages.push({
+        id: Date.now(),
+        sender: this.currentUser.name,
+        receiver: this.selectedUser.name,
+        text,
+      });
+    },
+  },
+  persist: true,
 });
