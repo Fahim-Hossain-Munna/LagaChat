@@ -75,7 +75,7 @@
                             <div class="space-y-1"
                                 :class="message.sender_id === authStore.user.id ? 'text-right' : 'text-left'">
                                 <div class="inline-block bg-red-500 text-white px-4 py-2 rounded-xl">{{ message.message
-                                    }}</div>
+                                }}</div>
                                 <p class="text-xs text-gray-500 mt-1">8:10 PM, April 28, 2025 </p>
                             </div>
                             <img src="https://masterbari.com/assets/images/profile/demo-profile.png" alt="User"
@@ -127,6 +127,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useChatStore } from '@/store/chatStore'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import Pusher from 'pusher-js'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -147,6 +148,7 @@ onMounted(async () => {
     }
 
     fetchUsers()
+    handlePusherChanel()
 
     chatStore.selectedUser = '';
 })
@@ -167,7 +169,10 @@ const handleSelectUser = async (user) => {
     activeIndex.value = user.id
     chatStore.selectUser(user)
     chatStore.currentUser = authStore.user
+    fetchMessages()
+}
 
+const fetchMessages = async () => {
     const response = await axios.get('chats',
         {
             headers: {
@@ -183,7 +188,6 @@ const handleSelectUser = async (user) => {
 }
 
 const handleSend = () => {
-    console.log(authStore.token);
 
     const response = axios.post('chats/store', {
         sender_id: authStore.user.id,
@@ -196,6 +200,7 @@ const handleSend = () => {
     })
 
     newMessage.value = ''
+    fetchMessages();
 }
 
 const searchShops = (e) => {
@@ -204,6 +209,26 @@ const searchShops = (e) => {
         search.value = e.target.value;
         fetchUsers();
     }, 500);
+}
+
+
+const handlePusherChanel = () => {
+
+    Pusher.logToConsole = false;
+
+    const pusher = new Pusher("0f2222c2748df3ad45ba", {
+        cluster: "ap2",
+        encrypted: true,
+    });
+
+    let userId = authStore.user.id;
+
+    const channel = pusher.subscribe('chat_' + userId);
+
+    channel.bind('chat_with_users', function (data) {
+        fetchUsers();
+        fetchMessages();
+    });
 }
 
 
