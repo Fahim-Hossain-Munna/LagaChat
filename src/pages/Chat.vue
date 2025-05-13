@@ -67,20 +67,27 @@
                     </div>
 
                     <!-- Chat Messages -->
-                    <div ref="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
+                    <div v-if="messages.length > 0" ref="chatContainer"
+                        class="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
                         <!-- User Message -->
                         <div v-for="message in messages" class="flex items-start gap-1"
                             :class="message.sender_id === authStore.user.id ? 'justify-end' : 'justify-start'">
                             <div class="space-y-1"
                                 :class="message.sender_id === authStore.user.id ? 'text-right' : 'text-left'">
                                 <div class="inline-block bg-red-500 text-white px-4 py-2 rounded-xl">{{ message.message
-                                }}</div>
+                                    }}</div>
                                 <p class="text-xs text-gray-500 mt-1">8:10 PM, April 28, 2025 </p>
                             </div>
                             <img src="https://masterbari.com/assets/images/profile/demo-profile.png" alt="User"
                                 class="w-10 h-10 rounded-full" />
                         </div>
+                    </div>
 
+                    <div v-else ref="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
+                        <div class="space-y-1 flex flex-col items-center justify-center h-full">
+                            <p class="font-semibold m-0 p-0">No Messages Found!</p>
+                            <p class="text-sm m-0 p-0">let's start a conversation</p>
+                        </div>
                     </div>
 
                     <!-- Divider -->
